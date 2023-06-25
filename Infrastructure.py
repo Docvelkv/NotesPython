@@ -6,15 +6,6 @@ import os
 filePath = "D:/Medium/NotesPython/notes.json"
 
 
-def showMenu():
-    print("1\tСоздать заметку\n \
-           2\tПосмотреть всё\n \
-           3\tПосмотреть текст заметок\n \
-           4\tИзменить заметку\n \
-           5\tУдалить заметку\n \
-           6\tЗавершить работу\n")
-
-
 def getAllNotes():
     if os.stat(filePath).st_size != 0:
         with open(filePath, 'r+', encoding="utf-8") as file:
@@ -34,8 +25,17 @@ def numOfNotes():
     return num
 
 
+def checkingExistenceOfKey(key):
+    notes = getAllNotes()
+    listKeys = list(notes.keys())
+    for i in listKeys:
+        if int(i) == key:
+            key = key + 1
+    return key
+
+
 def createNewNote():
-    key = numOfNotes() + 1
+    key = checkingExistenceOfKey(numOfNotes() + 1)
     title = input("Введите заголовок: ")
     content = input("Введите текст: ")
     note = Note.Note(title, content)
@@ -50,19 +50,22 @@ def createNewNote():
         data = {key: note.__dict__}
         with open(filePath, "w", encoding="utf-8") as file:
             json.dump(data, file, indent=0, ensure_ascii=False)
-    print(f"Добавлена новая заметка с номером {key}")
+    print(f"***\nДобавлена новая заметка с номером {key}\n***")
 
 
 def showContent():
     if getAllNotes is not None:
         notes = getAllNotes()
+        print("***")
         for x in notes:
             print(notes[x]['content'])
+    print("***")
 
 
 def showAll():
-    if getAllNotes is not None:
+    if getAllNotes() is not None:
         notes = getAllNotes()
+        print("***")
         for x in notes:
             print("№: ", x)
             for y in notes[x]:
@@ -73,6 +76,7 @@ def showAll():
                 if y == 'content':
                     st = "Текст: "
                 print(st, notes[x][y])
+    print("***")
 
 
 def updateNote():
@@ -87,9 +91,9 @@ def updateNote():
             data.update({key: note.__dict__})
         with open(filePath, "w", encoding="utf-8", ) as file:
             json.dump(data, file, indent=0, ensure_ascii=False)
-        print(f"Заметка с номером {key} изменена")
+        print(f"***\nЗаметка с номером {key} изменена\n***")
     else:
-        print("Изменять нечего, заметок нет")
+        print("***\nИзменять нечего, заметок нет\n***")
     showAll()
 
 
@@ -102,10 +106,7 @@ def delNote():
         del notes[key]
         with open(filePath, "w", encoding="utf-8") as file:
             json.dump(notes, file, indent=0, ensure_ascii=False)
-        print(f"заметка с номером {key} удалена")
+        print(f"***\nзаметка с номером {key} удалена\n***")
     else:
-        print("Заметка не найдена")
+        print("***\nЗаметка не найдена\n***")
     showAll()
-
-
-delNote()
